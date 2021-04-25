@@ -33,7 +33,7 @@ int main()
 	consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 	string file("Input.txt");//файл для считывания данных
 	string X;//множество атрибутов
-	vector<FD> F;//множество функциональных зависимостей (F=пустое множесто обозначается как 0->0)
+	vector<FD> F;//множество функциональных зависимостей (F=пустое множесто обозначается как 0)
 	vector<FD> G;//неизбыточное покрытие
 	ReadFile(file, X, F);
 	cout << "Введённые данные\n";
