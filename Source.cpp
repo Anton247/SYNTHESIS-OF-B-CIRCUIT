@@ -120,7 +120,7 @@ int main()
 	vector<FD> Key_l;//ключ левый
 	Key_p.push_back(FD("", ""));
 	Key_p[Key_p.size() - 1].left = X;
-	Key_p[Key_p.size() - 1].right = "&";//Сивол которого нет в алфавите (на лекциях N)
+	Key_p[Key_p.size() - 1].right = "&";//Сивол которого нет в алфавите
 
 	LRED_for_key(Key_p, Key_l);
 	cout << "\nКлюч(слева): " << Key_l[Key_l.size() - 1].left << endl;
@@ -146,12 +146,12 @@ int main()
 	if (F[0].left == "" && F[0].right == "")
 	{
 		cout << "F=0\nro={";
-		SetConsoleTextAttribute(consoleHandle, (WORD)((15 << 4) | 0));//выделение ключа красным цветом
+		SetConsoleTextAttribute(consoleHandle, (WORD)((15 << 4) | 0));//выделение ключа
 		cout << X;
 		SetConsoleTextAttribute(consoleHandle, (WORD)((0 << 4) | 15));
 		cout << "}\n";
 		system("pause");
-		return 4;
+		//return 4;
 	}
 	string check;
 	for (int i = 0; i < Fr.size(); i++)
@@ -229,7 +229,7 @@ int main()
 				S.push_back(Ro[i][j]);
 				sort(Fr[i].left.begin(), Fr[i].left.end());
 				if (includes(Fr[i].left.begin(), Fr[i].left.end(), S.begin(), S.end()))
-					SetConsoleTextAttribute(consoleHandle, (WORD)((15 << 4) | 0));//выделение ключа красным цветом
+					SetConsoleTextAttribute(consoleHandle, (WORD)((15 << 4) | 0));//выделение ключа
 				cout << Ro[i][j];
 				SetConsoleTextAttribute(consoleHandle, (WORD)((0 << 4) | 15));
 			}
@@ -279,7 +279,7 @@ void ReadFile(string& name, string& X, vector<FD>& F)
 	{
 		cout << "Файл Input.txt не найден!\n";
 		system("pause");
-		exit(9);
+		exit(-1);
 	}
 	In >> X; //считываем множество атрибутов до \n
 	X.shrink_to_fit();
@@ -288,28 +288,25 @@ void ReadFile(string& name, string& X, vector<FD>& F)
 	string input_2 = "";
 	string A;
 	char ch = 0;
-	while (!In.eof())
-	{
+	while (!In.eof()){
 		input_1 = "";
 		input_2 = "";
 		ch = 0;
-		while (true)
-		{
+		while (true) {
 			In >> ch;
-			if (ch == '\n')
-				break;
-			if (ch == '\0')
-				break;
 			if (ch == '-')
 				break;
-			if (ch != '0')
-				input_1 += ch;
+			input_1 += ch;
 			A += input_1;
+			if (ch == '0' and In.eof()) {
+				input_1.clear();
+				break;
+			}
 			if (In.eof())
 				break;
 		}
-		if (In.eof())
-		{
+		
+		if (In.eof()){
 			F.push_back(FD(input_1, input_2));
 			break;
 		}
@@ -338,6 +335,9 @@ void ReadFile(string& name, string& X, vector<FD>& F)
 	sort(A.begin(), A.end());
 	auto last = unique(A.begin(), A.end());
 	A.erase(last, A.end());
+	if (A.find('0') != string::npos)
+		A.erase(A.find("0"), 1);
+	cout << "";
 	sort(X.begin(), X.end());
 	if (A.size() == 1)
 		A.clear();
