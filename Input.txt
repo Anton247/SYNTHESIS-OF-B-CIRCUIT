@@ -1,4 +1,3 @@
-ABCD
-A->BC
-BC->D
-D->C
+ABC
+A->B
+AB->BC
