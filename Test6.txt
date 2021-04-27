@@ -1,0 +1,3 @@
+ABCD
+A->BD
+AB->CD

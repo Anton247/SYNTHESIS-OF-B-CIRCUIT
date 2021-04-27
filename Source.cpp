@@ -32,7 +32,7 @@ int main()
 	HANDLE consoleHandle = 0;
 	consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 	string file("Input.txt");//файл для считывания данных
-	string X;//множество атрибутов
+	string X;//множество атрибутов (первая строка в файле!)
 	vector<FD> F;//множество функциональных зависимостей (F=пустое множесто обозначается как 0)
 	vector<FD> G;//неизбыточное покрытие
 	ReadFile(file, X, F);
@@ -60,7 +60,8 @@ int main()
 				cout << "}\n";
 		}
 	}
-	NPOK(F, G);
+	
+	NPOK(F, G); //построение неизбыточного покрытия
 	cout << "\n1-я лабораторная\nНеизбыточное покрытие\n";
 	if (G.size() == 0)
 		cout << "0\n";
@@ -76,6 +77,7 @@ int main()
 		else
 			cout << G[i].right << endl;
 	}
+
 	vector<FD> Fl;//левое редуцирование
 	vector<FD> Fr;//правое редуцирование
 	cout << endl;
@@ -139,7 +141,7 @@ int main()
 	if (Key_r[Key_r.size() - 1].left != Key_l[Key_l.size() - 1].left)
 		cout << "Ключ(справа): " << Key_r[Key_r.size() - 1].left << endl << endl;
 	else
-		cout << "Ключ справа такой же\n\n";
+		cout << "Ключ справа такой же как и слева\n\n";
 
 	//синтез бетта схемы
 	cout << "4-я лабораторная\nСинтез B-схемы\n";
@@ -151,7 +153,7 @@ int main()
 		SetConsoleTextAttribute(consoleHandle, (WORD)((0 << 4) | 15));
 		cout << "}\n";
 		system("pause");
-		//return 4;
+		return 4;
 	}
 	string check;
 	for (int i = 0; i < Fr.size(); i++)
@@ -166,7 +168,7 @@ int main()
 		if (check == X)
 		{
 			cout << "ro={";
-			SetConsoleTextAttribute(consoleHandle, (WORD)((15 << 4) | 0));//выделение ключа красным цветом
+			SetConsoleTextAttribute(consoleHandle, (WORD)((15 << 4) | 0));//выделение ключа
 			cout << X;
 			SetConsoleTextAttribute(consoleHandle, (WORD)((0 << 4) | 15));
 			cout << "}\n";
@@ -254,14 +256,14 @@ int main()
 				S.push_back(Ro[i][j]);
 				sort(Fr[i].left.begin(), Fr[i].left.end());
 				if (includes(Fr[i].left.begin(), Fr[i].left.end(), S.begin(), S.end()))
-					SetConsoleTextAttribute(consoleHandle, (WORD)((15 << 4) | 0));//выделение ключа красным цветом
+					SetConsoleTextAttribute(consoleHandle, (WORD)((15 << 4) | 0));//выделение ключа
 				cout << Ro[i][j];
 				SetConsoleTextAttribute(consoleHandle, (WORD)((0 << 4) | 15));
 			}
 			cout << "); ";
 		}
 		cout << "R" << i << "(";
-		SetConsoleTextAttribute(consoleHandle, (WORD)((15 << 4) | 0));//выделение ключа красным цветом
+		SetConsoleTextAttribute(consoleHandle, (WORD)((15 << 4) | 0));//выделение ключа
 		cout << Key_l[Key_l.size() - 1].left;
 		SetConsoleTextAttribute(consoleHandle, (WORD)((0 << 4) | 15));
 		cout << ")";
