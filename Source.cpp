@@ -7,17 +7,18 @@
 #include <algorithm>
 #include <fstream>
 #include <iterator>
+#include <set>
 using namespace std;
 
-struct FD//Functional dependence
+struct FD//Функциональная зависимость 
 {
-	string left;
-	string right;
-	FD(const string& _l, const string& _r) : left(_l), right(_r) {};
+	vector<string> left;
+	vector<string> right;
+	FD(const vector<string>& _l, const vector<string>& _r) : left(_l), right(_r) {};
 };
 
-void ReadFile(string& name, string& X, vector<FD>& F);
-void SX(const string& X, const vector<FD>& F, string& X_plus);
+void ReadFile(string& name, vector<string>& X, vector<FD>& F);
+void SX(const vector<string>& X, const vector<FD>& F, vector<string>& X_plus);
 bool PRF(const FD& X_struct, const vector<FD>& F);
 void NPOK(const vector<FD>& F, vector<FD>& G);
 void LRED(const vector<FD>& F, vector<FD>& Fl);
@@ -32,28 +33,33 @@ int main()
 	HANDLE consoleHandle = 0;
 	consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 	string file("Input.txt");//файл для считывания данных
-	string X;//множество атрибутов (первая строка в файле!)
+	vector<string> X; X;//множество атрибутов (первая строка в файле!)
 	vector<FD> F;//множество функциональных зависимостей (F=пустое множесто обозначается как 0)
 	vector<FD> G;//неизбыточное покрытие
 	ReadFile(file, X, F);
 	cout << "Введённые данные\n";
-	cout << "R=" << X << endl;
+	cout << "R=";
+	for (auto x : X)
+		cout << x;
+	cout << "\n";
 	cout << "F={";
 	for (int i = 0; i < F.size(); i++)
 	{
-		if (F[i].left == "" && F[i].right == "")
+		if (F[i].left[0] == "" && F[i].right[0] == "")
 			cout << "0" << "}\n";
 		else
 		{
-			if (F[i].left == "")
+			if (F[i].left[0] == "")
 				cout << "0";
 			else
-				cout << F[i].left;
+				for (int j = 0; j < F[i].left.size(); j++)
+					cout << F[i].left[j];
 			cout << "->";
-			if (F[i].right == "")
+			if (F[i].right[0] == "")
 				cout << "0";
 			else
-				cout << F[i].right;
+				for (int j = 0; j < F[i].left.size(); j++)
+					cout << F[i].left[j];
 			if (i != F.size() - 1)
 				cout << ", ";
 			else
@@ -67,15 +73,20 @@ int main()
 		cout << "0\n";
 	for (int i = 0; i < G.size(); i++)
 	{
-		if (G[i].left == "")
+		if (G[i].left[0] == "")
 			cout << "0";
-		else
-			cout << G[i].left;
+		else {
+			for (int j = 0; j < G[i].left.size(); j++)
+				cout << G[i].left[j];
+		}
 		cout << "->";
-		if (G[i].right == "")
+		if (G[i].right[0] == "")
 			cout << "0";
-		else
-			cout << G[i].right << endl;
+		else {
+			for (int j = 0; j < G[i].right.size(); j++)
+				cout << G[i].right[j];
+		}
+		cout << "\n";
 	}
 
 	vector<FD> Fl;//левое редуцирование
@@ -89,15 +100,17 @@ int main()
 		cout << 0 << endl;
 	for (int i = 0; i < Fl.size(); i++)
 	{
-		if (Fl[i].left == "")
+		if (Fl[i].left[0] == "")
 			cout << "0";
 		else
-			cout << Fl[i].left;
+			for (int j = 0; j < Fl[i].left.size(); j++)
+				cout << Fl[i].left[j];
 		cout << "->";
-		if (Fl[i].right == "")
+		if (Fl[i].right[0] == "")
 			cout << "0";
 		else
-			cout << Fl[i].right << endl;
+			for (int j = 0; j < Fl[i].left.size(); j++)
+				cout << Fl[i].right[j];
 	}
 
 	PRED(Fl, Fr);
@@ -107,17 +120,20 @@ int main()
 		cout << 0 << endl;
 	for (int i = 0; i < Fr.size(); i++)
 	{
-		if (Fr[i].left == "")
+		if (Fr[i].left[0] == "")
 			cout << "0";
 		else
-			cout << Fr[i].left;
+			for (int j = 0; j < Fr[i].left.size(); j++)
+				cout << Fr[i].left[j];
 		cout << "->";
-		if (Fr[i].right == "")
+		if (Fr[i].right[0] == "")
 			cout << "0";
 		else
-			cout << Fr[i].right << endl;
+			for (int j = 0; j < Fr[i].right.size(); j++)
+				cout << Fr[i].right[j];
 	}
-
+	
+	/*
 	vector<FD> Key_p = Fr;//"ключевые" атрибуты
 	vector<FD> Key_l;//ключ левый
 	Key_p.push_back(FD("", ""));
@@ -218,6 +234,7 @@ int main()
 	}
 	*/
 
+	/*
 	if (Sweep_Board(X, Fr, Ro))
 	{
 		cout << "Ключ добавлять не нужно\n";
@@ -270,101 +287,133 @@ int main()
 		cout << "}\n";
 	}
 	cout << "\n\n";
+	*/
 	system("pause");
 	return 0;
 }
 
-void ReadFile(string& name, string& X, vector<FD>& F)
-{
+void ReadFile(string& name, vector<string>& X, vector<FD>& F) {
+	set<string> tX;
+	tX.insert("");
 	ifstream In(name);
-	if (!In)
-	{
-		cout << "Файл Input.txt не найден!\n";
-		system("pause");
+	if (!In) {
+		cout << "Файл не найден!";
 		exit(-1);
 	}
-	In >> X; //считываем множество атрибутов до \n
-	X.shrink_to_fit();
-	FD Func("", "");
-	string input_1 = "";
-	string input_2 = "";
+	//читаем атрибуты
+	char ch;
+	string buff;
+	getline(In, buff, '\n');
+	for (int i = 0; i < buff.length(); i++) {
+		if (buff[i] == ' ') {
+			buff.erase(i, 1);
+			i--;
+		}
+	}
+	//атрибуты в buff
+	//разбиваем buff на отдельные атрибуты
 	string A;
-	char ch = 0;
-	while (!In.eof()){
-		input_1 = "";
-		input_2 = "";
-		ch = 0;
-		while (true) {
-			In >> ch;
-			if (ch == '-')
-				break;
-			input_1 += ch;
-			A += input_1;
-			if (ch == '0' and In.eof()) {
-				input_1.clear();
+	int len = buff.length();
+	int j = 0;
+	while (j < len) {
+		A += buff[j];
+		while (j < len - 1)
+			if (buff[j + 1] >= '0' && buff[j + 1] <= '9') {
+				j++;
+				A += buff[j];
+			}
+			else {
 				break;
 			}
-			if (In.eof())
-				break;
-		}
-		
-		if (In.eof()){
-			F.push_back(FD(input_1, input_2));
-			break;
-		}
-		In >> ch;
-		if (ch == '\n')
-		{
-			F.push_back(FD(input_1, input_2));
-			break;
-		}
-		In >> input_2;
-		if (input_2[0] == '\n')
-			input_2.clear();
-		if (input_2 == "0")
-			input_2.clear();
-		else
-			A += input_2;
-		F.push_back(FD(input_1, input_2));
-	}
-	for (int i = 0; i < F.size(); i++)
-	{
-		F[i].left.shrink_to_fit();
-		F[i].right.shrink_to_fit();
-	}
-	F.shrink_to_fit();
 
-	sort(A.begin(), A.end());
-	auto last = unique(A.begin(), A.end());
-	A.erase(last, A.end());
-	if (A.find('0') != string::npos)
-		A.erase(A.find("0"), 1);
-	cout << "";
-	sort(X.begin(), X.end());
-	if (A.size() == 1)
+		tX.insert(A);
 		A.clear();
-	if (!includes(X.begin(), X.end(), A.begin(), A.end()))
-	{
-		cout << "ОШИБКА!!!\nколичество атрибутов в функцинальных зависимостях больше,\nчем в алфавите(1-я строка файла)!\n";
-		system("pause");
-		exit(-2);
+		j++;
+	}
+	X.assign(tX.begin(), tX.end());
+	int currentF = 0;
+	while (!In.eof()) {
+
+		buff.clear();
+		getline(In, buff, '-');
+		for (int i = 0; i < buff.length(); i++) {
+			if (buff[i] == ' ') {
+				buff.erase(i, 1);
+				i--;
+			}
+		}
+		//разбиваем buff на отдельные атрибуты
+		string A;
+		set<string> FLeft;
+		int len = buff.length();
+		int j = 0;
+		while (j < len) {
+			A += buff[j];
+			while (j < len - 1)
+				if (buff[j + 1] >= '0' && buff[j + 1] <= '9') {
+					j++;
+					A += buff[j];
+				}
+				else {
+					break;
+				}
+			if (A == "0")
+				A.clear();
+			FLeft.insert(A);
+			FLeft.insert("");
+			A.clear();
+			j++;
+		}
+		In.get(ch);
+		buff.clear();
+		getline(In, buff, '\n');
+		for (int i = 0; i < buff.length(); i++) {
+			if (buff[i] == ' ') {
+				buff.erase(i, 1);
+				i--;
+			}
+		}
+		//разбиваем buff на отдельные атрибуты
+		A.clear();
+		set<string> FRight;
+		len = buff.length();
+		j = 0;
+		while (j < len) {
+			A += buff[j];
+			while (j < len - 1)
+				if (buff[j + 1] >= '0' && buff[j + 1] <= '9') {
+					j++;
+					A += buff[j];
+				}
+				else {
+					break;
+				}
+			if (A == "0")
+				A.clear();
+			FRight.insert(A);
+			FRight.insert("");
+			A.clear();
+			j++;
+		}
+		vector<string> left;
+		vector<string> right;
+		left.assign(FLeft.begin(), FLeft.end());
+		right.assign(FRight.begin(), FRight.end());
+		F.push_back(FD(left, right));
 	}
 }
 
-void SX(const string& X, const vector<FD>& F, string& X_plus)
-{
-	string OLD = "";
-	string NEW = X;
-	string Q = "";
-	string A;
-	string B;
-	string C;
-	int k = 0;
-	while (NEW != OLD || (NEW == "" && k < F.size()))
+void SX(const vector<string>& X, const vector<FD>& F, vector<string>& X_plus) {
+	vector<string> OLD;
+	vector<string> NEW = X;
+	vector<string> Q;
+	vector<string> A;
+	vector<string> B;
+	vector<string> C;
+	while (NEW != OLD)
 	{
-		Q = "";
+		Q.clear();
 		OLD = NEW;
-		k++;
 		for (int i = 0; i < F.size(); i++)
 		{
 			A = NEW;
@@ -376,23 +425,24 @@ void SX(const string& X, const vector<FD>& F, string& X_plus)
 			if (includes(A.begin(), A.end(), B.begin(), B.end()))//строка содержит
 			{
 				Q.clear();
-				set_union(A.begin(), A.end(), C.begin(), C.end(), std::back_inserter(Q));//объединене множеств
+				set_union(A.begin(), A.end(), C.begin(), C.end(), back_inserter(Q));//объединение множеств
 				NEW = Q;
 			}
 		}
 	}
 	X_plus = NEW;
+	X_plus.push_back("");
+	set<string> XP(X_plus.begin(), X_plus.end());
+	X_plus.clear();
+	X_plus.assign(XP.begin(), XP.end());
 }
 
 bool PRF(const FD& X_struct, const vector<FD>& F)
 {
-	string X_plus;
-	string X = X_struct.left;
+	vector<string> X_plus;
+	vector<string> X = X_struct.left;
 	SX(X, F, X_plus);
-	sort(X_plus.begin(), X_plus.end());
-	string X_S_R = X_struct.right;
-	sort(X_S_R.begin(), X_S_R.end());
-	if (includes(X_plus.begin(), X_plus.end(), X_S_R.begin(), X_S_R.end()))//строка содержит
+	if (includes(X_plus.begin(), X_plus.end(), X_struct.right.begin(), X_struct.right.end()))//строка содержит
 		return true;
 	else
 		return false;
@@ -401,7 +451,7 @@ bool PRF(const FD& X_struct, const vector<FD>& F)
 void NPOK(const vector<FD>& F, vector<FD>& G)
 {
 	G = F;
-	vector<FD> G_minus = F;
+	vector<FD> G_minus;
 	for (int i = 0; i < F.size(); i++)
 	{
 		G_minus = G;
@@ -422,6 +472,7 @@ void NPOK(const vector<FD>& F, vector<FD>& G)
 			G = G_minus;
 	}
 }
+
 
 void LRED(const vector<FD>& F, vector<FD>& Fl)
 {
