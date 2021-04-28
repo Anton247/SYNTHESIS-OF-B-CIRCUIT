@@ -27,14 +27,12 @@ void LRED(const vector<FD>& F, vector<FD>& Fl);
 void PRED(const vector<FD>& Fl, vector<FD>& G);
 void LRED_for_key(const vector<FD>& F, vector<FD>& Fl);
 void PRED_for_key(const vector<FD>& Fl, vector<FD>& G);
-void synthesisOfBScheme(vector<FD> &F, vector<string> &X, vector<FD> Fred, vector<FD>& Key, HANDLE &consoleHandle);
+void synthesisOfBScheme(vector<FD> &F, vector<string> &X, vector<FD> Fred, vector<FD>& Key);
 bool Sweep_Board(vector<string>& R, const vector<FD>& F, const vector<vector<string>>& Scheme);
 
 int main()
 {
 	setlocale(0, "");
-	HANDLE consoleHandle = 0;
-	consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 	string file("Input.txt");//файл для считывания данных
 	vector<string> X; X;//множество атрибутов (первая строка в файле!)
 	vector<FD> F;//множество функциональных зависимостей (F=пустое множесто обозначается как 0)
@@ -94,7 +92,7 @@ int main()
 
 	//синтез бетта схемы
 	cout << "4-я лабораторная\nСинтез B-схемы\n";
-	synthesisOfBScheme(F, X, Fr, Key_l, consoleHandle);
+	synthesisOfBScheme(F, X, Fr, Key_l);
 	cout << "\n\n";
 
 	system("pause");
@@ -501,7 +499,8 @@ void PRED_for_key(const vector<FD>& Fl, vector<FD>& G)
 	}
 }
 
-void synthesisOfBScheme(vector<FD>& F, vector<string>& X, vector<FD> Fred, vector<FD>& Key, HANDLE& consoleHandle) {
+void synthesisOfBScheme(vector<FD>& F, vector<string>& X, vector<FD> Fred, vector<FD>& Key) {
+	HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 	if (F[0].left.size() == 0 && F[0].right.size() == 0) {
 		cout << "F=0\nro={";
 		SetConsoleTextAttribute(consoleHandle, (WORD)((15 << 4) | 0));//выделение ключа
