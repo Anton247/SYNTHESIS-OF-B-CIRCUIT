@@ -107,7 +107,7 @@ void printInputData(vector<string>& X, vector<FD>& F) {
 	cout << "\n";
 	cout << "F={";
 	for (int i = 0; i < F.size(); i++) {
-		if (F[i].left.size() == 1 && F[i].right.size() == 0)
+		if (F[i].left.size() == 0 && F[i].right.size() == 0)
 			cout << "0" << "}\n";
 		else {
 			if (F[i].left.size() == 1 && F[i].left[0] == "")
@@ -153,6 +153,8 @@ void printData(vector<FD>& F) {
 void ReadFile(string& name, vector<string>& X, vector<FD>& F) {
 	set<string> tX;
 	set<string> Atr;
+	set<string> ZERO;
+	ZERO.insert("0");
 	ifstream In(name);
 	if (!In) {
 		cout << "Файл не найден!";
@@ -161,6 +163,7 @@ void ReadFile(string& name, vector<string>& X, vector<FD>& F) {
 	//читаем атрибуты
 	char ch;
 	string buff;
+
 	getline(In, buff, '\n');
 	for (int i = 0; i < buff.length(); i++) {
 		if (buff[i] == ' ') {
@@ -222,6 +225,8 @@ void ReadFile(string& name, vector<string>& X, vector<FD>& F) {
 			A.clear();
 			j++;
 		}
+		if (FLeft == ZERO)
+			FLeft.clear();
 		In.get(ch);
 		buff.clear();
 		getline(In, buff, '\n');
@@ -251,6 +256,8 @@ void ReadFile(string& name, vector<string>& X, vector<FD>& F) {
 			A.clear();
 			j++;
 		}
+		if (FRight == ZERO)
+			FRight.clear();
 		vector<string> left;
 		vector<string> right;
 		left.assign(FLeft.begin(), FLeft.end());
