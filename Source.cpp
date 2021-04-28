@@ -25,7 +25,7 @@ void LRED(const vector<FD>& F, vector<FD>& Fl);
 void PRED(const vector<FD>& Fl, vector<FD>& G);
 void LRED_for_key(const vector<FD>& F, vector<FD>& Fl);
 void PRED_for_key(const vector<FD>& Fl, vector<FD>& G);
-bool Sweep_Board(string& R, const vector<FD>& F, const vector<string>& Scheme);
+bool Sweep_Board(vector<string>& R, const vector<FD>& F, const vector<vector<string>>& Scheme);
 
 int main()
 {
@@ -45,7 +45,7 @@ int main()
 	cout << "F={";
 	for (int i = 0; i < F.size(); i++)
 	{
-		if (F[i].left.size() == 1 && F[i].left[0] == "" && F[i].right.size() == 1)
+		if (F[i].left.size() == 1 && F[i].right.size() == 0)
 			cout << "0" << "}\n";
 		else
 		{
@@ -73,14 +73,14 @@ int main()
 		cout << "0\n";
 	for (int i = 0; i < G.size(); i++)
 	{
-		if (G[i].left.size() == 1 && G[i].left[0] == "")
+		if (G[i].left.size() == 0)
 			cout << "0";
 		else {
 			for (int j = 0; j < G[i].left.size(); j++)
 				cout << G[i].left[j];
 		}
 		cout << "->";
-		if (G[i].right.size() == 0 && G[i].right[0] == "")
+		if (G[i].right.size() == 0)
 			cout << "0";
 		else {
 			for (int j = 0; j < G[i].right.size(); j++)
@@ -100,17 +100,18 @@ int main()
 		cout << 0 << endl;
 	for (int i = 0; i < Fl.size(); i++)
 	{
-		if (Fl[i].left[0] == "")
+		if (Fl[i].left.size() == 0)
 			cout << "0";
 		else
 			for (int j = 0; j < Fl[i].left.size(); j++)
 				cout << Fl[i].left[j];
 		cout << "->";
-		if (Fl[i].right[0] == "")
+		if (Fl[i].right.size() == 0)
 			cout << "0";
 		else
-			for (int j = 0; j < Fl[i].left.size(); j++)
+			for (int j = 0; j < Fl[i].right.size(); j++)
 				cout << Fl[i].right[j];
+		cout << "\n";
 	}
 
 	PRED(Fl, Fr);
@@ -120,17 +121,18 @@ int main()
 		cout << 0 << endl;
 	for (int i = 0; i < Fr.size(); i++)
 	{
-		if (Fr[i].left[0] == "")
+		if (Fr[i].left.size() == 0)
 			cout << "0";
 		else
 			for (int j = 0; j < Fr[i].left.size(); j++)
 				cout << Fr[i].left[j];
 		cout << "->";
-		if (Fr[i].right[0] == "")
+		if (Fr[i].right.size() == 0)
 			cout << "0";
 		else
 			for (int j = 0; j < Fr[i].right.size(); j++)
 				cout << Fr[i].right[j];
+		cout << "\n";
 	}
 	
 	
@@ -144,7 +146,8 @@ int main()
 	LRED_for_key(Key_p, Key_l);
 	cout << "\nКлюч(слева): ";
 	for(auto k: Key_l[Key_l.size() - 1].left)
-		cout<< k << endl;
+		cout<< k;
+	cout << "\n";
 
 	vector<FD> Key_r;//ключ правый
 	Key_p.clear();
@@ -160,29 +163,33 @@ int main()
 	if (Key_r[Key_r.size() - 1].left != Key_l[Key_l.size() - 1].left){
 		cout << "Ключ(справа): ";
 		for(auto k: Key_r[Key_r.size() - 1].left)
-			cout<< k << endl;
+			cout<< k;
+		cout << "\n";
 	}
 	else
 		cout << "Ключ справа такой же как и слева\n\n";
-	/*
+	
 	//синтез бетта схемы
 	cout << "4-я лабораторная\nСинтез B-схемы\n";
-	if (F[0].left == "" && F[0].right == "")
+	if (F[0].left.size()==0 && F[0].right.size() == 0)
 	{
 		cout << "F=0\nro={";
 		SetConsoleTextAttribute(consoleHandle, (WORD)((15 << 4) | 0));//выделение ключа
-		cout << X;
+		for(auto x: X)
+			cout << x;
 		SetConsoleTextAttribute(consoleHandle, (WORD)((0 << 4) | 15));
 		cout << "}\n";
 		system("pause");
 		return 4;
 	}
-	string check;
+	vector<string> check;
+	//Fr - отредуцирован уже
 	for (int i = 0; i < Fr.size(); i++)
 	{
 		check.clear();
-		check += Fr[i].left;
-		check += Fl[i].right;
+		check = Fr[i].left;
+		for(auto r: Fl[i].right)
+			check.push_back(r);
 		sort(check.begin(), check.end());
 		auto last = unique(check.begin(), check.end());
 		check.erase(last, check.end());
@@ -191,7 +198,8 @@ int main()
 		{
 			cout << "ro={";
 			SetConsoleTextAttribute(consoleHandle, (WORD)((15 << 4) | 0));//выделение ключа
-			cout << X;
+			for(auto x: X)
+				cout << x;
 			SetConsoleTextAttribute(consoleHandle, (WORD)((0 << 4) | 15));
 			cout << "}\n";
 			system("pause");
@@ -205,7 +213,8 @@ int main()
 		for (int j = i + 1; j < Fr.size(); j++)
 			if (Fr[i].left == Fr[j].left)
 			{
-				Fr[i].right += Fr[j].right;
+				for(auto r: Fr[j].right)
+				Fr[i].right.push_back(r);
 				sort(Fr[i].right.begin(), Fr[i].right.end());
 				auto last = unique(Fr[i].right.begin(), Fr[i].right.end());
 				Fr[i].right.erase(last, Fr[i].right.end());
@@ -214,17 +223,17 @@ int main()
 			}
 	}
 
-	vector<string> Ro(Fr.size(), "");
+	vector<vector<string>> Ro(Fr.size());
 	for (int i = 0; i < Fr.size(); i++)
 	{
 		Ro[i] = Fr[i].left;
-		Ro[i] += Fr[i].right;
+		for(auto r: Fr[i].right)
+			Ro[i].push_back(r);
 		sort(Ro[i].begin(), Ro[i].end());
 	}
 
 	//поиск "вложенных" схем
 	//необязательно его применять
-	/*
 	for (int i = 0; i < Ro.size() - 1; i++)
 	{
 	for (int j = i + 1; j<Ro.size(); j++)
@@ -238,11 +247,10 @@ int main()
 	}
 	}
 	}
-	*/
-
-	/*
+	
 	if (Sweep_Board(X, Fr, Ro))
 	{
+		
 		cout << "Ключ добавлять не нужно\n";
 		cout << "ro= {";
 		for (int i = 0; i < Ro.size(); i++)
@@ -250,9 +258,10 @@ int main()
 			cout << "R" << i << "(";
 			for (int j = 0; j < Ro[i].size(); j++)
 			{
-				string S;
+				vector<string> S;
 				S.push_back(Ro[i][j]);
 				sort(Fr[i].left.begin(), Fr[i].left.end());
+				sort(S.begin(), S.end());
 				if (includes(Fr[i].left.begin(), Fr[i].left.end(), S.begin(), S.end()))
 					SetConsoleTextAttribute(consoleHandle, (WORD)((15 << 4) | 0));//выделение ключа
 				cout << Ro[i][j];
@@ -265,6 +274,7 @@ int main()
 		}
 		cout << "}\n";
 	}
+	
 	else
 	{
 		cout << "Ключ добавлять нужно\n";
@@ -275,7 +285,7 @@ int main()
 			cout << "R" << i << "(";
 			for (int j = 0; j < Ro[i].size(); j++)
 			{
-				string S;
+				vector<string> S;
 				S.push_back(Ro[i][j]);
 				sort(Fr[i].left.begin(), Fr[i].left.end());
 				if (includes(Fr[i].left.begin(), Fr[i].left.end(), S.begin(), S.end()))
@@ -287,20 +297,22 @@ int main()
 		}
 		cout << "R" << i << "(";
 		SetConsoleTextAttribute(consoleHandle, (WORD)((15 << 4) | 0));//выделение ключа
-		cout << Key_l[Key_l.size() - 1].left;
+		for(auto kl: Key_l[Key_l.size() - 1].left)
+		cout << kl;
 		SetConsoleTextAttribute(consoleHandle, (WORD)((0 << 4) | 15));
 		cout << ")";
 		cout << "}\n";
+		
 	}
 	cout << "\n\n";
-	*/
+	
 	system("pause");
 	return 0;
 }
 
 void ReadFile(string& name, vector<string>& X, vector<FD>& F) {
 	set<string> tX;
-	tX.insert("");
+	set<string> Atr;
 	ifstream In(name);
 	if (!In) {
 		cout << "Файл не найден!";
@@ -336,8 +348,10 @@ void ReadFile(string& name, vector<string>& X, vector<FD>& F) {
 		A.clear();
 		j++;
 	}
+	//Формирование множества атрибутов
 	X.assign(tX.begin(), tX.end());
-	int currentF = 0;
+
+	//начало чтения функциональных зависимостей
 	while (!In.eof()) {
 
 		buff.clear();
@@ -348,7 +362,7 @@ void ReadFile(string& name, vector<string>& X, vector<FD>& F) {
 				i--;
 			}
 		}
-		//разбиваем buff на отдельные атрибуты
+		//разбиваем buff на отдельные атрибуты (левая часть ФЗ)
 		string A;
 		set<string> FLeft;
 		int len = buff.length();
@@ -364,6 +378,7 @@ void ReadFile(string& name, vector<string>& X, vector<FD>& F) {
 					break;
 				}
 			FLeft.insert(A);
+			Atr.insert(A);
 			A.clear();
 			j++;
 		}
@@ -376,7 +391,7 @@ void ReadFile(string& name, vector<string>& X, vector<FD>& F) {
 				i--;
 			}
 		}
-		//разбиваем buff на отдельные атрибуты
+		//разбиваем buff на отдельные атрибуты (правая часть ФЗ)
 		A.clear();
 		set<string> FRight;
 		len = buff.length();
@@ -392,6 +407,7 @@ void ReadFile(string& name, vector<string>& X, vector<FD>& F) {
 					break;
 				}
 			FRight.insert(A);
+			Atr.insert(A);
 			A.clear();
 			j++;
 		}
@@ -400,6 +416,18 @@ void ReadFile(string& name, vector<string>& X, vector<FD>& F) {
 		left.assign(FLeft.begin(), FLeft.end());
 		right.assign(FRight.begin(), FRight.end());
 		F.push_back(FD(left, right));
+	}
+	vector<string> AtrV;
+	AtrV.assign(Atr.begin(), Atr.end());
+	if (X.size() < AtrV.size()) {
+		cout << "ОШИБКА!!!\nНе полный список атрибутов\nВ ФЗ используется необъявленный атрибут\n\n";
+		cout << "Нажми 1 чтобы автоматически дополнить множество атрибутов\nНажми 0 чтобы выйти из программы\nВвод:";
+		int q;
+		cin >> q;
+		if (q == 1)
+			X = AtrV;
+		else
+			exit(-3);
 	}
 }
 
@@ -474,7 +502,6 @@ void NPOK(const vector<FD>& F, vector<FD>& G)
 	}
 }
 
-
 void LRED(const vector<FD>& F, vector<FD>& Fl)
 {
 	Fl = F;
@@ -483,8 +510,6 @@ void LRED(const vector<FD>& F, vector<FD>& Fl)
 			vector<string>::iterator n;
 			vector<string> S;
 			S = F[i].left;
-			if (S[0] == "")
-				continue;
 			string A;
 			A = F[i].left[j];
 			n = find(S.begin(), S.end(), A);
@@ -523,7 +548,7 @@ void LRED_for_key(const vector<FD>& F, vector<FD>& Fl)
 			if (PRF(X, Fl))
 			{
 				n = find(Fl[i].left.begin(), Fl[i].left.end(), A);
-				if (n == Fl[i].left.end()){
+				if (n != Fl[i].left.end()){
 					Fl[i].left.erase(n);
 					j--;
 				}
@@ -585,9 +610,10 @@ void PRED(const vector<FD>& Fl, vector<FD>& G)
 	}
 
 	for (int i = 0; i < G.size(); i++) {
-		vector<string>::iterator n;
-		n = find(G[i].right.begin(), G[i].right.end(), "");
-		G.erase(G.begin() + i);
+		if (G[i].right.size() == 0) {
+			G.erase(G.begin() + i);
+			i--;
+		}
 	}
 }
 
@@ -657,8 +683,7 @@ void PRED_for_key(const vector<FD>& Fl, vector<FD>& G)
 		}*/
 }
 
-/*
-bool Sweep_Board(string& R, const vector<FD>& F, const vector<string>& Scheme)
+bool Sweep_Board(vector<string>& R, const vector<FD>& F, const vector<vector<string>>& Scheme)
 {
 	//R-атрибуты; F - функц.зависимости 
 	vector<vector<int>> board;
@@ -672,9 +697,9 @@ bool Sweep_Board(string& R, const vector<FD>& F, const vector<string>& Scheme)
 	for (int i = 0; i < Scheme.size(); i++)
 		for (int j = 0; j < R.size(); j++)
 		{
-			string Rj;
-			Rj += R[j];
-			string Schem = Scheme[i];
+			vector<string> Rj;
+			Rj.push_back(R[j]);
+			vector<string> Schem = Scheme[i];
 			sort(Schem.begin(), Schem.end());
 			if (includes(Schem.begin(), Schem.end(), Rj.begin(), Rj.end()))
 				board[i][j] = j + 1;
@@ -734,4 +759,3 @@ bool Sweep_Board(string& R, const vector<FD>& F, const vector<string>& Scheme)
 	}
 	return false;
 }
-*/

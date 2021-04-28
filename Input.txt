@@ -1,3 +1,4 @@
-ABC
-A->B
-AB->BC
+ABCD
+AD->C
+CD->A
+B->D
